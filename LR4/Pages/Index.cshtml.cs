@@ -76,6 +76,9 @@ namespace LR4.Pages
                 _ => null
             };
 
+            if (creator == null)
+                return BadRequest("Непідтримуваний формат файлу");
+
             byte[] bytes;
             using (MemoryStream ms = new MemoryStream())
             {
