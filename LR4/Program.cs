@@ -13,6 +13,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<DbDataContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IDataDBService, DataDBService>();
+
 builder.Services.AddScoped<ReportWriterCreator, JsonFormatW>();
 builder.Services.AddScoped<ReportWriterCreator, TxtFormatW>();
 builder.Services.AddScoped<ReportWriterCreator, XmlFormatW>();

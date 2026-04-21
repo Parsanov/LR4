@@ -37,7 +37,7 @@ namespace LR4.Pages
                 return BadRequest("Цей формат не підтримується");
 
             var bytes = await creator.ExportReport();
-            return File(bytes,creator.ContentType, creator.FileName);
+            return File(bytes, creator.ContentType, creator.FileName);
 
         }
 
