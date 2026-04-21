@@ -1,6 +1,3 @@
-using LR4.Application;
-using LR4.Application.Creators.Readers;
-using LR4.Application.Creators.Writers;
 using LR4.Core.Abstracts;
 using LR4.Core.Interfaces;
 using LR4.Core.Model;
@@ -11,56 +8,37 @@ namespace LR4.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly JsonFormatW _jsonFormatW;
-        private readonly TxtFormatW _txtFormatW;
-        private readonly XmlFormatW _xmlFormatW;
-
-        private readonly JsonFormatR _jsonFormatR;
-        private readonly TxtFormatR _txtFormatR;
-        private readonly XmlFormatR _xmlFormatR;
-
+        private readonly Dictionary<string, ReportWriterCreator> _writers;
+        private readonly Dictionary<string, ReportReaderCreator> _readers;
         private readonly IDataDBService _data;
 
-        public List<Book> Books { get; set; } = new List<Book>();
+        public List<Book> Books { get; set; } = new();
 
-        public IndexModel(JsonFormatW jsonFormat, TxtFormatW txtFormat, XmlFormatW xmlFormat
-            , JsonFormatR jsonFormatR, TxtFormatR txtFormatR, XmlFormatR xmlFormatR
-            , IDataDBService data)
+        public IndexModel(
+            IEnumerable<ReportWriterCreator> writers,
+            IEnumerable<ReportReaderCreator> readers,
+            IDataDBService data
+            )
         {
-            _jsonFormatW = jsonFormat;
-            _txtFormatW = txtFormat;
-            _xmlFormatW = xmlFormat;
-
-            _jsonFormatR = jsonFormatR;
-            _txtFormatR = txtFormatR;
-            _xmlFormatR = xmlFormatR;
+            _writers = writers.ToDictionary(w => w.Extension);
+            _readers = readers.ToDictionary(r => r.Extension);
             _data = data;
         }
-
-        public async Task<IActionResult> OnGetDownloadJson()
-        {
-            var bytes = await _jsonFormatW.ExportReport();
-            return File(bytes, "application/json", "report.json");
-        }
-
 
         public async Task OnGetAsync()
         {
             Books = (List<Book>)await _data.Get();
         }
+         
 
-
-        public async Task<IActionResult> OnGetDownloadTXT()
+        public async Task<IActionResult> OnGetDownload(string format)
         {
-            var bytes = await _txtFormatW.ExportReport();
-            return File(bytes, "text/plain", "report.txt");
-        }
+            if (!_writers.TryGetValue(format, out var creator))
+                return BadRequest("Цей формат не підтримується");
 
+            var bytes = await creator.ExportReport();
+            return File(bytes,creator.ContentType, creator.FileName);
 
-        public async Task<IActionResult> OnGetDownloadXML()
-        {
-            var bytes = await _xmlFormatW.ExportReport();
-            return File(bytes, "application/xml", "report.xml");
         }
 
 
@@ -68,26 +46,16 @@ namespace LR4.Pages
         {
             var extension = Path.GetExtension(file.FileName).ToLower();
 
-            ReportReaderCreator creator = extension switch
-            {
-                ".json" => _jsonFormatR,
-                ".txt" => _txtFormatR,
-                ".xml" => _xmlFormatR,
-                _ => null
-            };
+            if (!_readers.TryGetValue(extension, out var creators))
+                return BadRequest("Цей формат не підтримується");
 
-            if (creator == null)
-                return BadRequest("Непідтримуваний формат файлу");
+            using var ms = new MemoryStream();
+            await file.CopyToAsync(ms);
+            await creators.ImportReport(ms.ToArray());
 
-            byte[] bytes;
-            using (MemoryStream ms = new MemoryStream())
-            {
-                await file.CopyToAsync(ms);
-                bytes = ms.ToArray();
-            }
-
-            await creator.ImportReport(bytes);
             return RedirectToPage();
+
         }
+        
     }
 }

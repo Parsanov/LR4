@@ -5,6 +5,7 @@ namespace LR4.Core.Abstracts
 {
     public abstract class ReportReaderCreator
     {
+        public abstract string Extension { get; }
         public abstract IReportReader CreateReport();
         public async Task ImportReport(byte[] fileData)
         {

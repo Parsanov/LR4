@@ -13,6 +13,8 @@ namespace LR4.Application.Creators.Readers
            _data = data;
         }
 
+        public override string Extension => ".json";
+
         public override IReportReader CreateReport()
         {
            return new JsonReportReader(_data);

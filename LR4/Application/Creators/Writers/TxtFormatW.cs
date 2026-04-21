@@ -14,6 +14,12 @@ namespace LR4.Application.Creators.Writers
             _data = data;
         }
 
+        public override string Extension => ".txt";
+
+        public override string ContentType => "text/plain";
+
+        public override string FileName => "report.txt";
+
         public override IReportWriter CreateReport()
         {
             return new TxtReportWriter(_data);

@@ -1,87 +1,98 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Бібліотека книг";
 }
 
-<div class="text-center mt-5">
+<section class="text-center mt-5">
     <h1 class="display-4">Експорт книг</h1>
     <p class="text-muted">Оберіть формат для завантаження</p>
 
     <div class="d-flex justify-content-center gap-3 mt-4">
-        <a asp-page-handler="DownloadJson" class="btn btn-primary btn-lg">
-            ⬇ JSON
-        </a>
-        <a asp-page-handler="DownloadTXT" class="btn btn-success btn-lg">
-            ⬇ TXT
-        </a>
-        <a asp-page-handler="DownloadXML" class="btn btn-warning btn-lg">
-            ⬇ XML
-        </a>
+        <a asp-page-handler="Download" asp-route-format=".json"
+           class="btn btn-primary btn-lg btn-primary">⬇ JSON</a>
+        <a asp-page-handler="Download" asp-route-format=".txt"
+           class="btn btn-primary btn-lg btn-success">⬇ TXT</a>
+        <a asp-page-handler="Download" asp-route-format=".xml"
+           class="btn btn-primary btn-lg btn-warning">⬇ XML</a>
     </div>
-</div>
+</section>
 
 <hr class="my-5" />
 
-<div class="text-center mt-4">
+<section class="text-center mt-4">
     <h2 class="display-6">Імпорт книг</h2>
     <p class="text-muted">Завантажте файл формату JSON, TXT або XML</p>
 
-    <form method="post" asp-page-handler="ImportReport" enctype="multipart/form-data"
+    <form method="post"
+          asp-page-handler="ImportReport"
+          enctype="multipart/form-data"
           class="d-flex justify-content-center gap-3 mt-4 align-items-center">
-        <input type="file" id="fileInput" name="file" accept=".json,.txt,.xml" class="form-control w-auto" />
-        <button type="submit" class="btn btn-secondary btn-lg" onclick="return validateFile()">
+
+        <input type="file"
+               id="fileInput"
+               name="file"
+               accept=".json,.txt,.xml"
+               class="form-control w-auto" />
+
+        <button type="submit"
+                class="btn btn-secondary btn-lg"
+                onclick="return validateFile()">
             ⬆ Завантажити
         </button>
     </form>
 
-    <p id="fileError" class="text-danger mt-2" style="display:none;">Будь ласка, оберіть файл перед завантаженням.</p>
+    <p id="fileError" class="text-danger mt-2" style="display:none;">
+        Будь ласка, оберіть файл перед завантаженням.
+    </p>
+</section>
 
-    <script>
-            function validateFile() {
-                const file = document.getElementById('fileInput');
-                const error = document.getElementById('fileError');
-                if (!file.value) {
-                    error.style.display = 'block';
-                    return false;
-                }
-                error.style.display = 'none';
-                return true;
-            }
-    </script>
-    <hr class="my-5" />
+<hr class="my-5" />
 
-    <div class="container mt-4">
-        <h2 class="mb-3">📚 Список книг</h2>
-        <table class="table table-striped table-hover table-bordered align-middle">
-            <thead class="table-dark">
+<section class="container mt-4">
+    <h2 class="mb-3">📚 Список книг</h2>
+
+    <table class="table table-striped table-hover table-bordered align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Назва</th>
+                <th>Автор</th>
+                <th>Дата виходу</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model.Books)
+            {
                 <tr>
-                    <th>ID</th>
-                    <th>Назва</th>
-                    <th>Автор</th>
-                    <th>Дата виходу</th>
+                    <td>@book.Id</td>
+                    <td>@book.Title</td>
+                    <td>
+                        @if (book.Author is null)
+                        {
+                            <span class="text-muted">Невідомо</span>
+                        }
+                        else
+                        {
+                            @book.Author
+                        }
+                    </td>
+                    <td>@book.DateRelease?.ToString("yyyy-MM-dd")</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var book in Model.Books)
-                {
-                    <tr>
-                        <td>@book.Id</td>
-                        <td>@book.Title</td>
-                        <td>
-                            @if (book.Author is null)
-                            {
-                                <span class="text-muted">Невідомо</span>
-                            }
-                            else
-                            {
-                                @book.Author
-                            }
-                        </td>
-                        <td>@book.DateRelease?.ToString("yyyy-MM-dd")</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
+            }
+        </tbody>
+    </table>
+</section>
+
+<script>
+    function validateFile() {
+        const file = document.getElementById('fileInput');
+        const error = document.getElementById('fileError');
+        if (!file.value) {
+            error.style.display = 'block';
+            return false;
+        }
+        error.style.display = 'none';
+        return true;
+    }
+</script>

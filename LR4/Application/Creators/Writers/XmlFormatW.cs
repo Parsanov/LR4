@@ -13,6 +13,12 @@ namespace LR4.Application.Creators.Writers
             _data = data;
         }
 
+        public override string Extension => ".xml";
+
+        public override string ContentType => "application/xml";
+
+        public override string FileName => "report.xml";
+
         public override IReportWriter CreateReport()
         {
             return new XmlReportWriter(_data);

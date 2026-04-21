@@ -1,6 +1,7 @@
 using LR4.Application;
 using LR4.Application.Creators.Readers;
 using LR4.Application.Creators.Writers;
+using LR4.Core.Abstracts;
 using LR4.Core.Interfaces;
 using LR4.Persistence;
 using LR4.Persistence.Data;
@@ -12,13 +13,13 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<DbDataContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IDataDBService, DataDBService>();
-builder.Services.AddScoped<JsonFormatW>();
-builder.Services.AddScoped<TxtFormatW>();
-builder.Services.AddScoped<XmlFormatW>();
+builder.Services.AddScoped<ReportWriterCreator, JsonFormatW>();
+builder.Services.AddScoped<ReportWriterCreator, TxtFormatW>();
+builder.Services.AddScoped<ReportWriterCreator, XmlFormatW>();
 
-builder.Services.AddScoped<JsonFormatR>();
-builder.Services.AddScoped<TxtFormatR>();
-builder.Services.AddScoped<XmlFormatR>();
+builder.Services.AddScoped<ReportReaderCreator, JsonFormatR>();
+builder.Services.AddScoped<ReportReaderCreator, TxtFormatR>();
+builder.Services.AddScoped<ReportReaderCreator, XmlFormatR>();
 
 var app = builder.Build();
 

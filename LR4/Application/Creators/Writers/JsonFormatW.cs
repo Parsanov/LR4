@@ -12,6 +12,13 @@ namespace LR4.Application.Creators.Writers
         {
             _data = data;
         }
+
+        public override string Extension => ".json";
+
+        public override string ContentType => "application/json";
+
+        public override string FileName => "report.json";
+
         public override IReportWriter CreateReport()
         {
             return new JsonReportWriter(_data);
