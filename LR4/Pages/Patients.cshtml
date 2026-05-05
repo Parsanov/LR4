@@ -1,0 +1,72 @@
+@page
+@model LR4.Pages.PatientsModel
+@{
+    ViewData["Title"] = "Пацієнти стоматологічної клініки";
+}
+
+<section class="text-center mt-5">
+    <h1 class="display-5">🦷 Пацієнти стоматологічної клініки</h1>
+    <p class="text-muted">Перегляд записів та експорт у Excel</p>
+
+    <div class="d-flex justify-content-center gap-3 mt-4">
+        <a asp-page-handler="ExportExcel"
+           class="btn btn-success btn-lg">
+            ⬇ Завантажити Excel
+        </a>
+    </div>
+</section>
+
+<hr class="my-4" />
+
+<section class="container mt-4">
+    <h2 class="mb-3">Список пацієнтів</h2>
+
+    @if (!Model.Patients.Any())
+    {
+        <div class="alert alert-info">Записів не знайдено. Запустіть seed для заповнення даними.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover table-bordered align-middle small">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Прізвище</th>
+                        <th>Ім'я</th>
+                        <th>По-батькові</th>
+                        <th>Дата народження</th>
+                        <th>Стать</th>
+                        <th>Стан пацієнта</th>
+                        <th>Код лікаря</th>
+                        <th>Послуга</th>
+                        <th>Дата та час візиту</th>
+                        <th>Вартість (грн)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in Model.Patients)
+                    {
+                        <tr>
+                            <td>@p.Id</td>
+                            <td>@p.Surname</td>
+                            <td>@p.Name</td>
+                            <td>@p.Pname</td>
+                            <td>@p.Dr.ToString("dd.MM.yyyy")</td>
+                            <td>@(p.Gender ? "Чоловіча" : "Жіноча")</td>
+                            <td class="text-truncate" style="max-width:150px" title="@p.StateComments">
+                                @(p.StateComments ?? "—")
+                            </td>
+                            <td>@p.DoctorCode</td>
+                            <td class="text-truncate" style="max-width:150px" title="@p.Posluga">
+                                @p.Posluga
+                            </td>
+                            <td>@p.TimeVisit.ToString("dd.MM.yyyy HH:mm")</td>
+                            <td class="text-end">@p.Cost.ToString("F2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</section>

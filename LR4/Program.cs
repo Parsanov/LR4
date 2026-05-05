@@ -1,6 +1,7 @@
 using LR4.Application;
 using LR4.Application.Creators.Readers;
 using LR4.Application.Creators.Writers;
+using LR4.Application.Services;
 using LR4.Core.Abstracts;
 using LR4.Core.Interfaces;
 using LR4.Persistence;
@@ -13,6 +14,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<DbDataContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddScoped<IDataDBService, DataDBService>();
+builder.Services.AddScoped<IDentistryPatientService, DentistryPatientService>();
+builder.Services.AddScoped<ExcelExportService>();
 
 builder.Services.AddScoped<ReportWriterCreator, JsonFormatW>();
 builder.Services.AddScoped<ReportWriterCreator, TxtFormatW>();
@@ -40,5 +43,13 @@ app.UseAuthorization();
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
+
+// Seed тестових даних
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<DbDataContext>();
+    await db.Database.MigrateAsync();
+    await LR4.Persistence.DentistryPatientSeeder.SeedAsync(db);
+}
 
 app.Run();
