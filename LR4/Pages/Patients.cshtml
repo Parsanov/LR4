@@ -29,7 +29,14 @@
                 <select name="FontFamily" class="form-select">
                     @foreach (var f in new[]{"Arial","Times New Roman","Courier New","Georgia","Verdana","Tahoma","Trebuchet MS"})
                     {
-                        <option value="@f" @(Model.Settings.FontFamily == f ? "selected" : "")>@f</option>
+                        if (Model.Settings.FontFamily == f)
+                        {
+                            <option value="@f" selected>@f</option>
+                        }
+                        else
+                        {
+                            <option value="@f">@f</option>
+                        }
                     }
                 </select>
             </div>
@@ -85,16 +92,14 @@
 
             <form method="post" asp-page-handler="Undo">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-outline-secondary"
-                        @(!Model.CanUndo ? "disabled" : "")>
+                <button type="submit" class="btn btn-outline-secondary @(!Model.CanUndo ? "disabled" : "")">
                     ↩ Undo
                 </button>
             </form>
 
             <form method="post" asp-page-handler="Redo">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="btn btn-outline-secondary"
-                        @(!Model.CanRedo ? "disabled" : "")>
+                <button type="submit" class="btn btn-outline-secondary @(!Model.CanRedo ? "disabled" : "")">
                     ↪ Redo
                 </button>
             </form>
