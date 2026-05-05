@@ -143,7 +143,7 @@
     else
     {
         <div class="table-responsive">
-            <table class="table table-striped table-hover table-bordered align-middle"
+            <table id="patients-table" class="table table-striped table-hover table-bordered align-middle"
                    style="@css">
                 <thead class="table-dark">
                     <tr>
@@ -189,9 +189,18 @@
 
 @section Scripts {
 <script>
-    // Оновлювати лейбл кольору в реальному часі
     document.querySelector('input[type=color]').addEventListener('input', function () {
         document.getElementById('colorLabel').textContent = this.value;
     });
 </script>
 }
+
+<style>
+    #patients-table td, #patients-table th {
+        font-family: @Model.Settings.FontFamily !important;
+        font-size: @(Model.Settings.FontSize)px !important;
+        color: @Model.Settings.FontColor !important;
+        font-weight: @(Model.Settings.IsBold ? "bold" : "normal") !important;
+        font-style: @(Model.Settings.IsItalic ? "italic" : "normal") !important;
+    }
+</style>
